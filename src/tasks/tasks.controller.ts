@@ -22,31 +22,41 @@ import { GetUser } from 'src/auth/get-user.decorator';
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
-    constructor(private tasksService: TasksService) { }
+        constructor(private tasksService: TasksService) { }
 
-    @Get()
-    getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
-        return this.tasksService.getTasks(filterDto)
-    }
+        @Get()
+        getTasks(
+            @Query() filterDto: GetTasksFilterDto,
+            @GetUser() user: User,
+        ): Promise<Task[]> {
+            return this.tasksService.getTasks(filterDto, user)
+        }
 
         @Get('/:id')
-        getTaskById(@Param('id') id: string): Promise<Task> {
-           return this.tasksService.getTaskById(id) 
+        getTaskById(
+            @Param('id') id: string,
+            @GetUser() user: User,
+        ): Promise<Task> {
+           return this.tasksService.getTaskById(id, user) 
         }
 
 
         @Delete('/:id')
-        deleteTaskById(@Param('id') id: string): Promise<void> {
-            return this.tasksService.deleteTaskById(id)
+        deleteTaskById(
+            @Param('id') id: string,
+            @GetUser() user: User
+        ): Promise<void> {
+            return this.tasksService.deleteTaskById(id, user)
         }
 
         @Patch('/:id/status')
         updateTaskStatusById(
             @Param('id') id: string,
-            @Body('') UpdateTaskStatusDto: UpdateTaskStatusDto 
+            @Body('') UpdateTaskStatusDto: UpdateTaskStatusDto,
+            @GetUser() user: User, 
         ): Promise<Task> {
             const { status } = UpdateTaskStatusDto
-            return this.tasksService.updateTaskStatusById(id, status)
+            return this.tasksService.updateTaskStatusById(id, status, user)
         }
 
         @Post()

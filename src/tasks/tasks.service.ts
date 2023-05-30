@@ -14,11 +14,11 @@ export class TasksService {
         private tasksRepository: TasksRepository,
     ) {}
 
-    getTasks(filterDto: GetTasksFilterDto): Promise<Task[]> {
-        return this.tasksRepository.getTasks(filterDto)
+    getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
+        return this.tasksRepository.getTasks(filterDto, user)
     }
 
-    async getTaskById(id: string): Promise<Task> {
+    async getTaskById(id: string, user: User): Promise<Task> {
         // fetch task from db, error if not found, return if found
         const found = await this.tasksRepository.findOneBy({id: id})
         if (!found) {
@@ -27,7 +27,7 @@ export class TasksService {
         return found
     }
 
-    async deleteTaskById(id: string): Promise<void> {
+    async deleteTaskById(id: string, user: User): Promise<void> {
         const result = await this.tasksRepository.delete(id)
 
         if (result.affected === 0) {
@@ -35,8 +35,8 @@ export class TasksService {
         }
     }
 
-    async updateTaskStatusById(id: string, status: TaskStatus): Promise<Task> {
-        const task = await this.getTaskById(id)
+    async updateTaskStatusById(id: string, status: TaskStatus, user: User): Promise<Task> {
+        const task = await this.getTaskById(id, user)
 
         task.status = status
         await this.tasksRepository.save(task)
